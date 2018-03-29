@@ -28,6 +28,14 @@ void error(const __FlashStringHelper*err) {
   while (1);
 }
 
+int32_t batCharId;
+int32_t 2dPosCharId;
+int32_t txPowLevCharId;
+int32_t gsmStateCharId;
+int32_t gsmSignalCharId;
+int32_t gsmRxMessCharId;
+int32_t gsmTxMessCharId;
+
 void initSystem ()
 {
   while (!Serial); // required for Flora & Micro
@@ -84,7 +92,9 @@ void initSystem ()
   /* Add battery measurement characteristic */
   Serial.println(F("Adding battery measurement characteristic: "));
 
-  if (! ble.sendCommandCheckOK(F("AT+GATTADDCHAR=UUID=0x2A19,PROPERTIES=0x10,MIN_LEN=1,VALUE=100")) ) {
+  success = ble.sendCommandWithIntReply(F("AT+GATTADDCHAR=UUID=0x2A19,PROPERTIES=0x10,MIN_LEN=1,VALUE=100"), &batCharId);
+
+  if (!success) {
     error(F("Could not add battery measurement characteristic"));
   }
 
@@ -98,7 +108,9 @@ void initSystem ()
   /* Add 2D position characteristic */
   Serial.println(F("Adding 2D position characteristic: "));
 
-  if (! ble.sendCommandCheckOK(F("AT+GATTADDCHAR=UUID=0x2A2F,PROPERTIES=0x10,MIN_LEN=1,VALUE=1")) ) {
+  success = ble.sendCommandWithIntReply(F("AT+GATTADDCHAR=UUID=0x2A2F,PROPERTIES=0x10,MIN_LEN=1,VALUE=1"), &2dPosCharId);
+
+  if (! success ) {
     error(F("Could not add 2D position characteristic"));
   }
 
@@ -112,7 +124,9 @@ void initSystem ()
   /* Add tx power level characteristic */
   Serial.println(F("Adding tx power level characteristic: "));
 
-  if (! ble.sendCommandCheckOK(F("AT+GATTADDCHAR=UUID=0x2A07,PROPERTIES=0x02,MIN_LEN=1,VALUE=1")) ) {
+  success = ble.sendCommandWithIntReply(F("AT+GATTADDCHAR=UUID=0x2A07,PROPERTIES=0x02,MIN_LEN=1,VALUE=1"), &txPowLevCharId);
+
+  if (! success ) {
     error(F("Could not add tx power level characteristic"));
   }
 
@@ -126,28 +140,36 @@ void initSystem ()
   /* Add custom GSM state characteristic */
   Serial.println(F("Adding custom GSM state characteristic: "));
 
-  if (! ble.sendCommandCheckOK(F("AT+GATTADDCHAR=UUID=0x0002,PROPERTIES=0x02,MIN_LEN=1,VALUE=100")) ) {
+  success = ble.sendCommandWithIntReply(F("AT+GATTADDCHAR=UUID=0x0002,PROPERTIES=0x02,MIN_LEN=1,VALUE=100"), &gsmStateCharId);
+
+  if (! success ) {
     error(F("Could not add custom GSM state characteristic"));
   }
 
   /* Add custom GSM signal characteristic */
   Serial.println(F("Adding custom GSM signal characteristic: "));
 
-  if (! ble.sendCommandCheckOK(F("AT+GATTADDCHAR=UUID=0x0003,PROPERTIES=0x02,MIN_LEN=1,VALUE=100")) ) {
+  success = ble.sendCommandWithIntReply(F("AT+GATTADDCHAR=UUID=0x0003,PROPERTIES=0x02,MIN_LEN=1,VALUE=100"), &gsmSignalCharId);
+
+  if (! success ) {
     error(F("Could not add custom GSM signal characteristic"));
   }
 
   /* Add custom GSM rx message characteristic */
   Serial.println(F("Adding custom GSM rx message characteristic: "));
 
-  if (! ble.sendCommandCheckOK(F("AT+GATTADDCHAR=UUID=0x0004,PROPERTIES=0x02,MIN_LEN=1,VALUE=100")) ) {
+  success = ble.sendCommandWithIntReply(F("AT+GATTADDCHAR=UUID=0x0004,PROPERTIES=0x02,MIN_LEN=1,VALUE=100"), &gsmRxMessCharId);
+
+  if (! success ) {
     error(F("Could not add custom GSM rx message characteristic"));
   }
 
   /* Add custom GSM tx message characteristic */
   Serial.println(F("Adding custom GSM tx message characteristic: "));
 
-  if (! ble.sendCommandCheckOK(F("AT+GATTADDCHAR=UUID=0x0005,PROPERTIES=0x08,MIN_LEN=1,VALUE=100")) ) {
+  success = ble.sendCommandWithIntReply(F("AT+GATTADDCHAR=UUID=0x0005,PROPERTIES=0x08,MIN_LEN=1,VALUE=100"), &gsmTxMessCharId);
+
+  if (! success ) {
     error(F("Could not add custom GSM tx message characteristic"));
   }
 
