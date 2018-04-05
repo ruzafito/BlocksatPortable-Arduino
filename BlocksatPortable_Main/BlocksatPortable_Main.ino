@@ -1,3 +1,18 @@
+/*********************************************************************
+ This code contains parts included in Adafruit Libraries and example
+ codes from Adafruit, all of them under free software licenses.
+
+ Some pieces of the BLE module code are imported from bleuart_cmdmode
+ example of the Adafruit BluefruitLE nRF51 Library, under MIT license.
+
+ Some pieces of the FONA module code are imported from FONAtest example
+ of the Adafruit FONA Library, written by Limor Fried/Ladyada for
+ Adafruit Industries under BSD license.
+
+ Some pieces of the FONA module code are imported from GPS example
+ of the Adafruit FONA Library, written by Todd Treece for Adafruit
+ Industries under MIT license.
+*********************************************************************/
 /**
    ----------------------------
    TFM - Blocksat Portable v1.0
@@ -14,12 +29,22 @@
    2018
 */
 
-void setup() {
+void setup()
+{
   initSystem();
+  initBLESystem();
+  initFONASystem();
+
+  initMainMotor();
+  initGPS();
+  initBLEComms();
 
 }
 
-void loop() {
-  
+void loop()
+{
 
+  receiveBLEData();
+  MainMotor();
+  
 }
