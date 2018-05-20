@@ -17,8 +17,8 @@ int mainState, prevMainState;
 long T0_MainMotor;
 
 /**
- * Initializes the states and the timers of the Main Motor.
- */
+   Initializes the states and the timers of the Main Motor.
+*/
 void initMainMotor()
 {
   mainState = 0;
@@ -27,15 +27,15 @@ void initMainMotor()
 }
 
 /**
- * Manage the cases and state of the system.
- */
+   Manage the cases and state of the system.
+*/
 void MainMotor()
 {
 
   switch (mainState)
   {
     case 0:
-      sendStates();
+      sendStatesToApp();
       T0_MainMotor = millis();
       if (prevMainState == 0)
       {
@@ -67,15 +67,15 @@ void MainMotor()
 }
 
 /**
- * Auxiliary function in charge of wait preconfigured time (SEND_UPDATE) to send
- * a new update of the device data to the App.
- */
+   Auxiliary function in charge of wait preconfigured time (SEND_UPDATE) to send
+   a new update of the device data to the App.
+*/
 void waitForSendUpdate()
 {
   prevMainState = mainState;
-  if( millis() > T0_MainMotor + SEND_UPDATE)
+  if ( millis() > T0_MainMotor + SEND_UPDATE)
   {
-     mainState = 0;
+    mainState = 0;
   }
   else
   {
@@ -84,55 +84,59 @@ void waitForSendUpdate()
 }
 
 /**
- * Send the system states to the App.
- * Include the states of the GPS, Battery and GPRS subsystems.
- */
-void sendStates()
+   Send the system states to the App.
+   Include the states of the GPS, Battery and GPRS subsystems.
+*/
+void sendStatesToApp()
 {
   sendGPSData();
   sendBatteryData();
-  sendGPRSData();
+  sendGPRSSignal();
+  sendGPRSState();
 }
 
 /**
- * Manage the actions to do depending on the parsed message from App.
- */
+   Manage the actions to do depending on the parsed message from App.
+*/
 void MessageHandler()
 {
-
-  /// TODO: create a messageHandler depending on the parsed message from App.
-  
-//  if (activity == "res")
-//  {
-//    Serial.println("RESET states");
-//    resetStates();
-//  }
-//  else if (activity == "con")
-//  {
-//    controlHandler();
-//  }
-//  else if (activity == "acc")
-//  {
-//    accelerometerHandler();
-//  }
-//  else if (activity == "lab")
-//  {
-//    laberinthHandler();
-//  }
-//  else
-//  {
-//    Serial.println("Message activity no valid");
-//  }
+  if (header == appToDevHeader) // Message from App
+  {
+    if (parameter == "req")
+    {
+      if (values[0] == "str" || values[0] == "stp" || values[0] == "pse")
+      {
+        /// TODO: Send to CTC a request with value
+        sendToUDP("");
+      }
+      else
+      {
+        // wrong request value
+      }
+    }
+    else if (parameter == "cfg")
+    {
+      // TODO: change device configuration
+    }
+    else
+    {
+      // Message parameter not valid
+    }
+  }
+  else if (header == CTCToDevHeader) //Message from CTC
+  {
+    
+  }
 }
 
 /**
- * Reset the states of the subsystems.
- */
+   Reset the states of the subsystems.
+*/
 void resetStates()
 {
   initMainMotor();
   initGPS();
   initBLEComms();
-  
+
 }
 

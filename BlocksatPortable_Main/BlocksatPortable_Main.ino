@@ -39,12 +39,17 @@ void setup()
   initGPS();
   initBLEComms();
 
+  initGPRSComms();
+
+  vibrateDevice(100, 2000);
+
 }
 
 void loop()
 {
 
   receiveBLEData();
+  receiveFromUDP();
   MainMotor();
   
 }

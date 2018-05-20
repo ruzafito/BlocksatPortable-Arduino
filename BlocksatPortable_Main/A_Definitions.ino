@@ -15,6 +15,21 @@
 // Baud Rate
 #define baudRate        115200
 
+// Headers
+#define appToDevHeader   "AD"
+#define devToAppHeader   "DA"
+#define devToCTCHeader   "DC"
+#define CTCToDevHeader   "CD"
+
+// Separators
+#define headerSeparator   "_"
+#define paramSeparator    ":"
+#define valueSeparator    ";"
+#define endSeparator      "/"
+
+// Arrays Limits
+#define VALUES_LIMIT    10
+
 // ----Times definition----
 #define WAIT_TIME       1000
 #define GPS_UPDATE      3000
@@ -27,6 +42,11 @@
 #define FONA_RX 10
 #define FONA_TX 9
 #define FONA_RST 6
+
+// TCP connection
+/// TODO: Change with correct values
+#define UDP_IP        "116.228.221.51"
+#define UDP_PORT      8500
 
 //----------------------------------- BLUEFRUIT CONFIGURATION -----------------------------------
 // COMMON SETTINGS

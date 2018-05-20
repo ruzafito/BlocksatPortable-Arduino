@@ -23,14 +23,14 @@ String batPerc;
 void readBatteryData()
 {
   // read the battery percentage
-  Serial.println(F("Read the battery percentage: "));
+//  Serial.println(F("Read the battery percentage: "));
   if (! fona.getBattPercent(&vbat))
   {
-    Serial.println(F("Failed to read Batt"));
+//    Serial.println(F("Failed to read Batt"));
     batPerc = "NA";
   } else
   {
-    Serial.print(F("VPct = ")); Serial.print(vbat); Serial.println(F("%"));
+//    Serial.print(F("VPct = ")); Serial.print(vbat); Serial.println(F("%"));
     batPerc = String(vbat);
   }
 }
@@ -41,6 +41,6 @@ void readBatteryData()
 void sendBatteryData()
 {
   readBatteryData();
-  sendBLEData("BP_batter:" + batPerc);
+  sendBLEData("blv:" + batPerc);
 }
 
