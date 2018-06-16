@@ -18,26 +18,23 @@ uint16_t vbat;
 String batPerc;
 
 /**
- * Implements the read of the battery level of the device in percentege.
- */
+   Implements the read of the battery level of the device in percentege.
+*/
 void readBatteryData()
 {
   // read the battery percentage
-//  Serial.println(F("Read the battery percentage: "));
   if (! fona.getBattPercent(&vbat))
   {
-//    Serial.println(F("Failed to read Batt"));
     batPerc = "NA";
   } else
   {
-//    Serial.print(F("VPct = ")); Serial.print(vbat); Serial.println(F("%"));
     batPerc = String(vbat);
   }
 }
 
 /**
- * Read the battery level and send it to the App.
- */
+   Read the battery level and send it to the App.
+*/
 void sendBatteryData()
 {
   readBatteryData();

@@ -15,6 +15,9 @@
 
 int mainState, prevMainState;
 long T0_MainMotor;
+long TSend = SEND_UPDATE;
+String TMinWork = WORK_TIME;
+long trainDistance = TRAIN_DISTANCE;
 
 /**
    Initializes the states and the timers of the Main Motor.
@@ -73,7 +76,7 @@ void MainMotor()
 void waitForSendUpdate()
 {
   prevMainState = mainState;
-  if ( millis() > T0_MainMotor + SEND_UPDATE)
+  if ( millis() > T0_MainMotor + TSend)
   {
     mainState = 0;
   }
@@ -106,8 +109,8 @@ void MessageHandler()
     {
       if (values[0] == "str" || values[0] == "stp" || values[0] == "pse")
       {
-        /// TODO: Send to CTC a request with value
-        sendToUDP("");
+        sendToUDP(parameter + paramSeparator + values[0] + paramSeparator + TMinWork);
+        sendBLEData("cts:wai");
       }
       else
       {
@@ -116,7 +119,13 @@ void MessageHandler()
     }
     else if (parameter == "cfg")
     {
-      // TODO: change device configuration
+      values[0].toCharArray(CTCIP, 20);
+      CTCPort = atol(values[1].c_str());
+      trainDistance = atol(values[2].c_str());
+      TSend = atol(values[3].c_str()) * 1000;
+      TMinWork = values[4];
+
+      vibrateDevice(250, 1000);
     }
     else
     {
@@ -125,8 +134,59 @@ void MessageHandler()
   }
   else if (header == CTCToDevHeader) //Message from CTC
   {
-    
+    if (parameter == "rqr")
+    {
+      if (values[0] == "str" && values [1] == "ok")
+      {
+        sendBLEData("cts:grn");
+        sendToUDP("ops:wrk");
+        sendBLEData("cts:wrk");
+      }
+      else if (values[0] == "str" && values [1] == "nok")
+      {
+        sendBLEData("cts:den");
+        sendToUDP("ops:wai");
+      }
+      else if (values[0] == "stp" && values [1] == "ok")
+      {
+        sendBLEData("cts:end");
+        sendToUDP("ops:wai");
+      }
+      else
+      {
+        // wrong request value
+      }
+    }
+    else if (parameter == "wng")
+    {
+      vibrateDevice(100, 2000);
+    }
+    else if (parameter == "wrk")
+    {
+      if (values[0] == "end")
+      {
+        sendBLEData("cts:end");
+        sendToUDP("ops:wai");
+      }
+      vibrateDevice(100, 2000);
+    }
+    else if (parameter == "trn")
+    {
+      if (atol(values[3].c_str()) < trainDistance)
+      {
+        vibrateDevice(100, 4000);
+      }
+      sendBLEData("ctt:" + values[0] + ";" + values[1] + ";" + values[2] + ";" + values[3]);
+    }
+    else
+    {
+      // Message parameter not valid
+    }
   }
+
+  header = "";
+  parameter = "";
+  values[0] = "";
 }
 
 /**
@@ -137,6 +197,5 @@ void resetStates()
   initMainMotor();
   initGPS();
   initBLEComms();
-
 }
 

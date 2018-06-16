@@ -10,7 +10,7 @@
    from the module FONA, and send it to the App. The GPRS data includes
    the signal level (RSSI) and the state of the network.
 
-   Before execute the functions of this tab is needed a correct initialization of 
+   Before execute the functions of this tab is needed a correct initialization of
    the FONA System.
    ----------------------------
    2018
@@ -21,6 +21,9 @@ String CTCMessageRx;
 bool CTCDataAvailable;
 char *rxBuffer;
 
+char* CTCIP = UDP_IP;
+long CTCPort = UDP_PORT;
+
 void initGPRSComms()
 {
   CTCDataAvailable = false;
@@ -29,9 +32,6 @@ void initGPRSComms()
 
   /// TODO: If connection with CTC is OK. Send position and wait for ACK from CTC.
 
-  fona.setPWM(1000, 80);
-  delay(300);
-  fona.setPWM(0, 80);
 }
 
 /**
@@ -51,7 +51,6 @@ void readGPRSSignal()
   // read the RSSI
   uint8_t n = fona.getRSSI();
 
-  //  Serial.print(F("RSSI = ")); Serial.print(n); Serial.print(": ");
   if (n == 0) rssi_dBm = -115;
   if (n == 1) rssi_dBm = -111;
   if (n == 31) rssi_dBm = -52;
@@ -59,7 +58,6 @@ void readGPRSSignal()
   {
     rssi_dBm = map(n, 2, 30, -110, -54);
   }
-  //  Serial.print(rssi_dBm); Serial.println(F(" dBm"));
 }
 
 /**
@@ -72,7 +70,6 @@ void sendGPRSSignal()
   String rssiToSend = String(rssi_dBm);
 
   sendBLEData("gri:" + rssiToSend);
-
 }
 
 /**
@@ -80,7 +77,7 @@ void sendGPRSSignal()
 */
 void connectToUDP()
 {
-  fona.UDPconnect(UDP_IP, UDP_PORT);
+  fona.UDPconnect(CTCIP, CTCPort);
 }
 
 /**
@@ -88,12 +85,12 @@ void connectToUDP()
 */
 void sendToUDP(String message)
 {
-  char inputs[BUFSIZE];
+  //char inputs[BUFSIZE];
   message = headerSeparator + message;
   message = devToCTCHeader + message;
-  message.toCharArray(inputs, message.length() + 1);
+  message = message + endSeparator;
 
-  fona.UDPsend(inputs, message.length() + 1);
+  Serial.println("Received in CTC: " + message);
 }
 
 /**
@@ -101,25 +98,45 @@ void sendToUDP(String message)
 */
 void receiveFromUDP()
 {
-  if (fona.UDPavailable())
+
+  char inputs[BUFSIZE + 1];
+
+  if ( getUserInput(inputs, BUFSIZE) )
   {
-    uint8_t recv[21];
-    Serial.println("UDP Data available");
-    unsigned long lastRead = millis();
-    while (millis() - lastRead < 5000)
-    {
-      while (fona.UDPavailable())
-      {
-        uint8_t r = fona.UDPread(recv, 20);
-        recv[r] = 0;
-        //      Serial.write((char *)recv);
-        rxBuffer = (char *)recv;
-        lastRead = millis();
-      }
-    }
-    CTCMessageRx = String(rxBuffer);
+    CTCMessageRx = String(inputs);
     Serial.println("UDP received: " + CTCMessageRx);
+    int endIndex = CTCMessageRx.indexOf("/");
+
+    if (endIndex > 0)
+    {
+      CTCMessageRx.remove(endIndex);
+      parseMessage (CTCMessageRx);
+      CTCMessageRx = "";
+    }
   }
+}
+
+bool getUserInput(char buffer[], uint8_t maxSize)
+{
+  // timeout in 100 milliseconds
+  TimeoutTimer timeout(100);
+
+  memset(buffer, 0, maxSize);
+  while ( (!Serial.available()) && !timeout.expired() ) {
+    delay(1);
+  }
+
+  if ( timeout.expired() ) return false;
+
+  delay(2);
+  uint8_t count = 0;
+  do
+  {
+    count += Serial.readBytes(buffer + count, maxSize);
+    delay(2);
+  } while ( (count < maxSize) && (Serial.available()) );
+
+  return true;
 }
 
 /**

@@ -37,11 +37,14 @@ void setup()
 
   initMainMotor();
   initGPS();
-  initBLEComms();
 
   initGPRSComms();
 
-  vibrateDevice(100, 2000);
+  vibrateDevice(250, 1000);
+
+  initBLEComms();
+
+  vibrateDevice(250, 2000);
 
 }
 

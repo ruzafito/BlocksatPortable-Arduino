@@ -124,7 +124,7 @@ void receiveBLEData()
   message = message + textToAdd;
 
   int endIndex = message.indexOf("/");
-
+  
   if (endIndex > 0)
   {
     message.remove(endIndex);

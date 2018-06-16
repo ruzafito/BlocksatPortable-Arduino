@@ -36,6 +36,8 @@
 #define SEND_UPDATE     5000
 #define TIMEOUT_ECHO    25000
 #define GPRS_INIT_TIME  10000
+#define WORK_TIME       "240"
+#define TRAIN_DISTANCE  2500
 
 //------------------------------------- FONA CONFIGURATION --------------------------------------
 // FONA Pins

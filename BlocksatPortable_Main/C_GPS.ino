@@ -53,33 +53,15 @@ void sendGPSData()
       sendBLEData("gss:" + stateGPSToSend);
     }
     // GPS Fix. GPS Data available in global variables (latitude, longitude...)
-//    Serial.println("GPS Fix. GPS Data available: ");
-//    Serial.print("GPS lat:");
-//    Serial.println(latitude, 6);
-//    Serial.print("GPS long:");
-//    Serial.println(longitude, 6);
-//    Serial.print("GPS speed KPH:");
-//    Serial.println(speed_kph);
-//    Serial.print("GPS speed MPH:");
-//    speed_mph = speed_kph * 0.621371192;
-//    Serial.println(speed_mph);
-//    Serial.print("GPS heading:");
-//    Serial.println(heading);
-//    Serial.print("GPS altitude:");
-//    Serial.println(altitude);
-
     
     String lat = String(latitude, 6);
     String lon = String(longitude, 6);
-    //lat.remove(5);
-    //lon.remove(5);
     sendBLEData("gsp:" + lat + "," + lon);
+    sendToUDP("gsp:" + lat + "," + lon);
   }
   else
   {
     // GPS No Fix. No GPS Data Available.
-//    Serial.println("GPS No Fix. No GPS Data Available.");
-//    Serial.println("Waiting for FONA GPS 3D fix...");
     if (stateGPSToSend != "sch")
     {
       stateGPSToSend = "sch";

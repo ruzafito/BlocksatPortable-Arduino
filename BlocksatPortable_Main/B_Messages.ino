@@ -37,11 +37,12 @@ void parseMessage(String message)
   parameter = message.substring(indexOfHeaderSep + 1, indexOfParSep);
   
   String allValues = message.substring(indexOfParSep + 1, message.length());
-  int indexOfValSep = allValues.indexOf(valueSeparator);
+
+  int i = 0;
 
   while (allValues.length() > 1)
   {
-    int i = 0;
+    int indexOfValSep = allValues.indexOf(valueSeparator);
     if (indexOfValSep == -1)
     {
       values[i] = allValues;
@@ -61,7 +62,7 @@ void parseMessage(String message)
     flagParsed = true;
     
     // send an ACK reply
-    sendBLEData("ack");
+    //sendBLEData("ack");
   }
   else
   {
