@@ -93,9 +93,15 @@ void waitForSendUpdate()
 void sendStatesToApp()
 {
   sendGPSData();
-  sendBatteryData();
-  sendGPRSSignal();
-  sendGPRSState();
+
+  sendNAVToUDP();
+  //sendToUDP("Hola");
+
+  if (needToSend) {
+    sendBatteryData();
+    sendGPRSSignal();
+    sendGPRSState();
+  }
 }
 
 /**

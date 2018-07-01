@@ -18,7 +18,9 @@
 */
 
 #ifndef DEBUG_BLE_COMS
-#define DEBUG_BLE_COMS
+#define DEBUG_BLE_COMS_NO
+
+bool needToSend = true;
 
 /**
    Initializes the communication between the module and the App.
@@ -75,8 +77,11 @@ void initBLEComms ()
 #if defined(DEBUG_BLE_COMS)
   Serial.println("BLE device and App connected and initializated correctly...");
 #endif
+  needToSend = true;
   flagReceived = false;
   flagParsed = false;
+
+  vibrateDevice(250, 2000);
 }
 
 /**
@@ -94,44 +99,52 @@ void receiveBLEData()
   if (! ble.isConnected())
   {
 #if defined(DEBUG_BLE_COMS)
-    Serial.println("BLE App disconnected. Trying to reconnect...");
+    if (needToSend) {
+      Serial.println("BLE App disconnected. Trying to reconnect...");
+    }
 #endif
     // If BLE App is disconnected, reset System and reconnect:
-    resetStates();
+    //resetStates();
+    needToSend = false;
+  } else if (!needToSend){
+    needToSend = true;
+    initBLEComms();
   }
-  // Check for incoming characters from Bluefruit
-  ble.println("AT+BLEUARTRX");
-  ble.readline();
-  if (strcmp(ble.buffer, "OK") == 0)
-  {
-    // no data
-    return;
-  }
-  // Some data was found, its in the buffer
+  
+  if (needToSend) {
+    // Check for incoming characters from Bluefruit
+    ble.println("AT+BLEUARTRX");
+    ble.readline();
+    if (strcmp(ble.buffer, "OK") == 0)
+    {
+      // no data
+      return;
+    }
+    // Some data was found, its in the buffer
 #if defined(DEBUG_BLE_COMS)
-  Serial.print(F("[Recv] ")); Serial.println(ble.buffer);
+    Serial.print(F("[Recv] ")); Serial.println(ble.buffer);
 #endif
-  char* myStrings[] = {ble.buffer};
-  if (ble.waitForOK())
-  {
-    flagReceived = true;
-    // flagReceived is setted to false when is processed by MainMotor
+    char* myStrings[] = {ble.buffer};
+    if (ble.waitForOK())
+    {
+      flagReceived = true;
+      // flagReceived is setted to false when is processed by MainMotor
+    }
+
+    String textToAdd = myStrings[0];
+
+    // Get the message and save it in a global variable
+    message = message + textToAdd;
+
+    int endIndex = message.indexOf("/");
+
+    if (endIndex > 0)
+    {
+      message.remove(endIndex);
+      parseMessage (message);
+      message = "";
+    }
   }
-
-  String textToAdd = myStrings[0];
-
-  // Get the message and save it in a global variable
-  message = message + textToAdd;
-
-  int endIndex = message.indexOf("/");
-  
-  if (endIndex > 0)
-  {
-    message.remove(endIndex);
-    parseMessage (message);
-    message = "";
-  }
-  
 }
 
 /**

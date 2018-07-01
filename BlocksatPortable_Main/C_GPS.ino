@@ -15,12 +15,13 @@
 */
 
 bool stateGPSFix;
-float latitude, longitude, speed_kph, heading, speed_mph, altitude;
+//float longitude, latitude;
+float speed_kph, heading, speed_mph, altitude;
 String stateGPSToSend;
 
 /**
- * Initializes the GPS states.
- */
+   Initializes the GPS states.
+*/
 void initGPS()
 {
   stateGPSFix = false;
@@ -28,9 +29,9 @@ void initGPS()
 }
 
 /**
- * Implements the read of the GPS data, includes latitude, longitude, speed,
- * heading and altitude.
- */
+   Implements the read of the GPS data, includes latitude, longitude, speed,
+   heading and altitude.
+*/
 void readGPSData()
 {
   // if you ask for an altitude reading, getGPS will return false if there isn't a 3D fix
@@ -38,25 +39,31 @@ void readGPSData()
 }
 
 /**
- * Read the GPS data check if GPS is fix and if data is available
- * format and send it to the App, else send to App that GPS is searching.
- */
+   Read the GPS data check if GPS is fix and if data is available
+   format and send it to the App and CTC, else send to App that GPS is searching.
+*/
 void sendGPSData()
 {
   readGPSData();
-  
-  if(stateGPSFix)
+
+  if (stateGPSFix)
   {
     if (stateGPSToSend != "on")
     {
       stateGPSToSend = "on";
-      sendBLEData("gss:" + stateGPSToSend);
+      if (needToSend) {
+        sendBLEData("gss:" + stateGPSToSend);
+      }
     }
     // GPS Fix. GPS Data available in global variables (latitude, longitude...)
-    
+
     String lat = String(latitude, 6);
     String lon = String(longitude, 6);
-    sendBLEData("gsp:" + lat + "," + lon);
+    if (needToSend) {
+      // Sending GPS data to App
+      sendBLEData("gsp:" + lat + "," + lon);
+    }
+    // Sending GPS data to CTC
     sendToUDP("gsp:" + lat + "," + lon);
   }
   else
@@ -65,9 +72,9 @@ void sendGPSData()
     if (stateGPSToSend != "sch")
     {
       stateGPSToSend = "sch";
-      sendBLEData("gss:" + stateGPSToSend);
+      if (needToSend) {
+        sendBLEData("gss:" + stateGPSToSend);
+      }
     }
   }
 }
-
-/// TODO: Funcion que envie los datos GPS al CTC

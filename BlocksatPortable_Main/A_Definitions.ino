@@ -47,8 +47,12 @@
 
 // TCP connection
 /// TODO: Change with correct values
-#define UDP_IP        "116.228.221.51"
-#define UDP_PORT      8500
+#define UDP_IP        "77.225.106.57"
+#define UDP_PORT      49500
+
+// GPS global variables definition
+float longitude = 0.0;
+float latitude = 0.0;
 
 //----------------------------------- BLUEFRUIT CONFIGURATION -----------------------------------
 // COMMON SETTINGS
@@ -59,9 +63,6 @@
 #define VERBOSE_MODE                   true  // If set to 'true' enables debug output
 
 // HARDWARE UART SETTINGS
-// ----------------------------------------------------------------------------------------------
-// The following macros declare the HW serial port you are using. Uncomment
-// this line if you are connecting the BLE to Leonardo/Micro or Flora
 // ----------------------------------------------------------------------------------------------
   #define BLUEFRUIT_HWSERIAL_NAME      Serial1
 

@@ -28,7 +28,7 @@ void error(const __FlashStringHelper*err) {
    Set baud rate of the Serial and print version information.
 */
 void initSystem () {
-  while (!Serial); // required for Flora & Micro
+  //while (!Serial); // required for Flora & Micro
   delay(500);
 
 #if defined(DEBUG_INIT)

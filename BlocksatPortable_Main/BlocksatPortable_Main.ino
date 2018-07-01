@@ -43,9 +43,6 @@ void setup()
   vibrateDevice(250, 1000);
 
   initBLEComms();
-
-  vibrateDevice(250, 2000);
-
 }
 
 void loop()
